@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+service authencationService {
+    rpc authenticateUserById (userIdRequest) returns (userObjectResponse) {}
+    rpc authenticateUserByAccessToken (accessTokenRequest) returns (userObjectResponse) {}
+}
+
+message userIdRequest {
+    required string id = 1;
+}
+
+message accessTokenRequest {
+    required string accessToken = 1;
+}
+
+message userObjectResponse {
+    required string id = 1;
+    required float isAdmin = 2;
+    required string email = 3;
+    required string mobile = 4;
+    required string firstName = 5;
+    required string lastName = 6;
+}

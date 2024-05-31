@@ -36,16 +36,19 @@ export const login = async (req, res) => {
     if (!isPasswordCorrect) {
       return res.send(400, "Wrong password!");
     }
+    const accessToken = await user.generateAccessToken();
+    const refreshToken = await user.generateRefreshToken();
+
+    user.refreshToken = refreshToken;
+    await user.save({ validateBeforeSave: false });
+
     const { password, isAdmin, ...otherDetails } = user._doc;
-    const token = jwt.sign(
-      { id: user._id, isAdmin: user.isAdmin },
-      process.env.JWT_SECRET_KEY
-    );
     res
-      .cookie("tstore_token", token)
+      .cookie("accessToken", accessToken)
       .status(200)
-      .json({ ...otherDetails });
+      .json({ refreshToken, accessToken, ...otherDetails });
   } catch (err) {
+    console.log("error while login", err)
     res.send(err);
   }
 };

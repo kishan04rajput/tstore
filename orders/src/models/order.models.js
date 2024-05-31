@@ -1,36 +1,40 @@
 import mongoose, { Schema } from "mongoose";
 import { CREATED, ORDER_STATUS_ENUM } from "../constants";
 
-const OrderSchema = new Schema(
+const orderSchema = new Schema(
     {
-        user_id: {
+        userId: {
             type: Schema.Types.ObjectId,
             ref: "User"
         },
-        payment_mode: {
+        paymentMode: {
             type: String,
             required: true
         },
-        delivery_date: {
+        deliveryDate: {
             type: Date,
             required: false,
         },
-        order_status: {
+        orderStatus: {
             type: String,
             required: true,
             enum: ORDER_STATUS_ENUM,
             default: CREATED
         },
-        shipping_address: {
+        shippingAddress: {
             type: Schema.Types.ObjectId,
             ref: 'Address',
         },
-        billing_address: {
+        billingAddress: {
             type: Schema.Types.ObjectId,
             ref: 'Address',
         }
 
+    },
+    {
+        timestamps: true
     }
+
 )
 
-export const Order = mongoose.model("Order", OrderSchema)
+export const Order = mongoose.model("Order", orderSchema)
