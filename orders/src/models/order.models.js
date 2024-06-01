@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { CREATED, ORDER_STATUS_ENUM } from "../constants";
+import { CREATED, ORDER_STATUS_ENUM } from "../constants.js";
 
 const orderSchema = new Schema(
     {
@@ -36,5 +36,6 @@ const orderSchema = new Schema(
     }
 
 )
+const Order = mongoose.model("Order", orderSchema)
 
-export const Order = mongoose.model("Order", orderSchema)
+export {Order}
