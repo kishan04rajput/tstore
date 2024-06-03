@@ -22,6 +22,6 @@ message productObjectResponse {
     required int32 price = 11;
     required int32 stock = 12;
     required bool isActive = 13;
-    required bool isDelete = 14;
+    required bool isDeleted = 14;
 
 }
