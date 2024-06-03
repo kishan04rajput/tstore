@@ -16,18 +16,6 @@ import {
     return connection;
   }
 
-  const ProductGRPCconnection = () => {
-    const definition = loadSync("../proto/product.proto");
-    const productProto = loadPackageDefinition(definition);
-    
-    const connection = new productProto.getProductInfo(
-      `0.0.0.0:${process.env.PRODUCT_GRPC_SERVER_PORT}`,
-      credentials.createInsecure()
-    );
-
-    return connection;
-  }
-
 
   function authenticateUserByAccessToken(accessToken) {
     return new Promise((resolve, reject) => {
@@ -41,19 +29,6 @@ import {
     });
   }
 
-  function getProductById(productId) {
-    return new Promise((resolve, reject) => {
-      const connection = ProductGRPCconnection();
-      connection.getProductById({ id: productId }, (err, productObj) => {
-        if (err) {
-          return reject(err);
-        }
-        resolve(productObj);
-      });
-    });
-  }
-
-
-  export {authenticateUserByAccessToken, getProductById};
+  export {authenticateUserByAccessToken};
 
 

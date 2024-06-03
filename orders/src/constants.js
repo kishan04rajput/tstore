@@ -1,4 +1,4 @@
-export const ORDERS_DB_NAME="tStroreOrdersDB"
+export const DB_NAME="tStroreOrdersDB"
 
 export const CANCELLED = 'cancelled'
 export const CREATED = 'created'

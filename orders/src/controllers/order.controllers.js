@@ -1,6 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
-import { authenticateUserByAccessToken } from "../gRPC/client.js";
+import { authenticateUserByAccessToken, getProductById } from "../gRPC/client.js";
 import { Order } from "../models/order.models.js";
 import { OrderItem } from "../models/orderItem.models.js";
 import mongoose from "mongoose";
@@ -40,13 +40,24 @@ const createOrder = asyncHandler(async (req, res) => {
     const orderedItems = [];
 
     for (let productQty of productsQtys) {
-      const orderedItem = await OrderItem.create({
-        orderId: order._id,
-        productId: new mongoose.Types.ObjectId(productQty.product),
-        price: 100,
-        quantity: productQty.quantity
+      let grpcProductObj = null;
+      await getProductById(productQty.product)
+      .then((data)=>{
+        grpcProductObj = data;
       })
-      orderedItems.push(orderedItem);
+      .catch((err)=>{
+        console.log(err);
+      });
+      if(grpcProductObj) {
+        console.log('---->', grpcProductObj);
+        const orderedItem = await OrderItem.create({
+          orderId: order._id,
+          productId: new mongoose.Types.ObjectId(grpcProductObj._id),
+          price: grpcProductObj.price,
+          quantity: productQty.quantity
+        })
+        orderedItems.push(orderedItem);
+      }
     }
        
     return res

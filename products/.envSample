@@ -1,0 +1,4 @@
+ORDERS_PORT=3001
+ORDERS_MONGODB_URI=mongodb+srv://root:admin@youplay.kova1ym.mongodb.net
+CORS_ORIGIN=*
+USER_GRPC_SERVER_PORT=50052
