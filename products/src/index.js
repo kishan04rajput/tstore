@@ -6,7 +6,7 @@ import grpcSever from "./gRPC/server.js";
 dotenv.config({
     path: './.env'
 })
-const port = process.env.ORDERS_PORT || 8000;
+const port = process.env.ORDERS_PORT || 8002;
 
 connectDB()
 .then(()=>{

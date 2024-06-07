@@ -1,6 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
-import { authenticateUserByAccessToken, getProductById } from "../gRPC/client.js";
+import { getProductById } from "../gRPC/client.js";
 import { Order } from "../models/order.models.js";
 import { OrderItem } from "../models/orderItem.models.js";
 import mongoose from "mongoose";
@@ -10,30 +10,15 @@ const createOrder = asyncHandler(async (req, res) => {
     let {paymentMode, shippingAddress, billingAddress, productsQtys} = req.body;
     shippingAddress = new mongoose.Types.ObjectId(shippingAddress);
     billingAddress = new mongoose.Types.ObjectId(billingAddress);
-    const accessToken =
-      req.cookies?.accessToken ||
-      req.header("Authorization")?.replace("Bearer ", "") ||
-      "";
-    if (!accessToken) {
-      throw new ApiError(401, "UnAuthorized Access");
-    }
-     
-    const userObj = await authenticateUserByAccessToken(accessToken).catch((err)=>{
-        return new ApiError(401, "Unable to authenticate user");
-    });
-
-    if(!userObj) {
-      return new ApiError(401, "invalid access token");
-    }
 
     const createdOrder = await Order.create({
       paymentMode,
       shippingAddress,
       billingAddress,
-      userId: new mongoose.Types.ObjectId(userObj.id)
+      userId: new mongoose.Types.ObjectId(req.user.id)
     })
     if(!createdOrder) {
-      return new ApiError(500, "Unable to create order");
+      throw new ApiError(500, "Unable to create order");
     }
 
     const order = await Order.findById(createdOrder._id);
@@ -49,7 +34,6 @@ const createOrder = asyncHandler(async (req, res) => {
         console.log(err);
       });
       if(grpcProductObj) {
-        console.log('---->', grpcProductObj);
         const orderedItem = await OrderItem.create({
           orderId: order._id,
           productId: new mongoose.Types.ObjectId(grpcProductObj._id),
