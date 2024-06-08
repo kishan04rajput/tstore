@@ -15,7 +15,7 @@ app.use("/address", addressRoute);
 app.use("/add2Cart", cartRoutes);
 app.use("/", userRoute);
 
-app.listen(process.env.PORT, () => {
+app.listen(process.env.PORT || 8003, () => {
   connect();
   grpcSever();
   console.log(`Server started at port ${process.env.PORT}`);

@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+service getProductInfo {
+    rpc getProductById(productIdRequest) returns (productObjectResponse) {}
+}
+
+message productIdRequest {
+    required string id = 1;
+}
+
+message productObjectResponse {
+    required string _id = 1;
+    required string createdBy = 2;
+    required string title = 3;
+    required string category = 4;
+    required string productURL = 5;
+    required string description = 6;
+    required string discountType = 7;
+    required float discountValue = 8; 
+    required string tags = 9;
+    required string slug = 10;
+    required int32 price = 11;
+    required int32 stock = 12;
+    required bool isActive = 13;
+    required bool isDeleted = 14;
+
+}
