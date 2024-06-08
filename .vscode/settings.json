@@ -1,0 +1,8 @@
+{
+  "editor.scrollbar.horizontal": "auto",
+  "editor.scrollbar.vertical": "auto",
+  "editor.scrollbar.horizontalScrollbarSize": 11,
+  "editor.scrollbar.verticalScrollbarSize": 11,
+  "workbench.tree.enableStickyScroll": true,
+  "workbench.editor.titleScrollbarSizing": "large"
+}

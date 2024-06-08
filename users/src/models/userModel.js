@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
+
 const userSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -9,12 +10,13 @@ const userSchema = new mongoose.Schema({
   mobile: {
     type: String,
     required: true,
+    uniquie: true,
   },
-  first_name: {
+  firstName: {
     type: String,
     required: true,
   },
-  last_name: {
+  lastName: {
     type: String,
     required: true,
   },
@@ -32,13 +34,28 @@ const userSchema = new mongoose.Schema({
   refreshToken: {
     type: String,
   },
+  resetPasswordToken: {
+    type: String,
+  },
+  resetPasswordExpires: {
+    type: Date,
+  },
 });
 
-userSchema.methods.generateAccessToken = function() {
-  return jwt.sign({ id: this._id, isAdmin: this.isAdmin }, process.env.ACCESS_TOKEN_SECRET, {expiresIn: process.env.ACCESS_TOKEN_EXPIRY});
+userSchema.methods.generateAccessToken = function () {
+  return jwt.sign(
+    { id: this._id, isAdmin: this.isAdmin },
+    process.env.ACCESS_TOKEN_SECRET,
+    { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
+  );
 };
-userSchema.methods.generateRefreshToken = function() {
-  return jwt.sign({ id: this._id, isAdmin: this.isAdmin }, process.env.REFRESH_TOKEN_SECRET, {expiresIn: process.env.REFRESH_TOKEN_EXPIRY});
+
+userSchema.methods.generateRefreshToken = function () {
+  return jwt.sign(
+    { id: this._id, isAdmin: this.isAdmin },
+    process.env.REFRESH_TOKEN_SECRET,
+    { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
+  );
 };
 
 export default mongoose.model("user", userSchema);

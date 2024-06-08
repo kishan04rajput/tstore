@@ -9,15 +9,15 @@ const orderSchema = new Schema(
         },
         paymentMode: {
             type: String,
-            required: true
+            // required: true
         },
         deliveryDate: {
             type: Date,
-            required: false,
+            // required: false,
         },
         orderStatus: {
             type: String,
-            required: true,
+            // required: true,
             enum: ORDER_STATUS_ENUM,
             default: CREATED
         },

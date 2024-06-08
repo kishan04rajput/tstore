@@ -8,7 +8,6 @@ import {
 import { loadSync } from "@grpc/proto-loader";
 import User from "../models/userModel.js";
 import jwt from "jsonwebtoken";
-
 async function authenticateUserById(call, callback) {
     const userId = call.request.id;
     console.log(userId);
@@ -45,7 +44,7 @@ async function authenticateUserByAccessToken(call, callback) {
             accessToken,
             process.env.ACCESS_TOKEN_SECRET
         );
-        const userId = decodedInfo?.id
+        const userId = decodedInfo?.id;
         console.log(userId);
         if (userId) {
             const user = await User.findById(userId);
@@ -71,8 +70,7 @@ async function authenticateUserByAccessToken(call, callback) {
                 code: status.INVALID_ARGUMENT,
             });
         }
-    }
-    catch(err){
+    } catch (err) {
         callback({
             message: "Invalid Access Token",
             code: status.INVALID_ARGUMENT,
@@ -81,7 +79,7 @@ async function authenticateUserByAccessToken(call, callback) {
 }
 
 function grpcSever() {
-    const definition = loadSync("../proto/user.proto");
+    const definition = loadSync("../../proto/user.proto");
     const userProto = loadPackageDefinition(definition);
 
     const server = new Server();
