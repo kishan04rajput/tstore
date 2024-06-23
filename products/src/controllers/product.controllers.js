@@ -30,20 +30,6 @@ const createProduct = asyncHandler(async (req, res) => {
 });
 
 const createCategory = asyncHandler(async (req, res) => {
-    const accessToken =
-      req.cookies?.tStoreAccessToken ||
-      req.header("Authorization")?.replace("Bearer ", "") ||
-      "";
-    if (!accessToken) {
-      throw new ApiError(401, "UnAuthorized Access");
-    }
-    const userObj = await authenticateUserByAccessToken(accessToken).catch((err)=>{
-        throw new ApiError(401, "Unable to authenticate user");
-    });
-
-    if(!userObj) {
-      throw new ApiError(401, "invalid access token");
-    }
     const {name, description, tags} = req.body
 
     const createdCategory = await Category.create({
