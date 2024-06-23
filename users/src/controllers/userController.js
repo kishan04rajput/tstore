@@ -46,7 +46,7 @@ export const login = async (req, res) => {
 
     const { password, isAdmin, ...otherDetails } = user._doc;
     res
-      .cookie("tstore_token", accessToken)
+      .cookie("tStoreAccessToken", accessToken)
       .status(200)
       .json({ refreshToken, accessToken, ...otherDetails });
   } catch (err) {

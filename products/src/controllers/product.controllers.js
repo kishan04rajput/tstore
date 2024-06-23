@@ -8,23 +8,9 @@ import { authenticateUserByAccessToken } from "../gRPC/client.js";
 
 
 const createProduct = asyncHandler(async (req, res) => {
-    const accessToken =
-      req.cookies?.accessToken ||
-      req.header("Authorization")?.replace("Bearer ", "") ||
-      "";
-    if (!accessToken) {
-      throw new ApiError(401, "UnAuthorized Access");
-    }
-    const userObj = await authenticateUserByAccessToken(accessToken).catch((err)=>{
-        throw new ApiError(401, "Unable to authenticate user");
-    });
-
-    if(!userObj) {
-      throw new ApiError(401, "invalid access token");
-    }
     const {title, category, description, price, stock} = req.body
     const createdProduct = await Product.create({
-        createdBy: new mongoose.Types.ObjectId(userObj.id),
+        createdBy: new mongoose.Types.ObjectId(req.user.id),
         title,
         category,
         description,
@@ -45,7 +31,7 @@ const createProduct = asyncHandler(async (req, res) => {
 
 const createCategory = asyncHandler(async (req, res) => {
     const accessToken =
-      req.cookies?.accessToken ||
+      req.cookies?.tStoreAccessToken ||
       req.header("Authorization")?.replace("Bearer ", "") ||
       "";
     if (!accessToken) {

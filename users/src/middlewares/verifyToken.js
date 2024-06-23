@@ -7,7 +7,7 @@ export const verifyToken = (req, res, next) => {
     return res.send("No token is available!");
   }
   jwt.verify(
-    req.cookies.tstore_token,
+    req.cookies.tStoreAccessToken,
     process.env.ACCESS_TOKEN_SECRET,
     (err, user) => {
       if (err) {
