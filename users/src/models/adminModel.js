@@ -1,16 +1,11 @@
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 
-const userSchema = new mongoose.Schema({
+const adminSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
     unique: true,
-  },
-  mobile: {
-    type: String,
-    required: true,
-    uniquie: true,
   },
   firstName: {
     type: String,
@@ -24,9 +19,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  cart: {
-    type: [String],
-  },
   refreshToken: {
     type: String,
   },
@@ -38,7 +30,7 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-userSchema.methods.generateAccessToken = function () {
+adminSchema.methods.generateAccessToken = function () {
   return jwt.sign(
     { id: this._id, isAdmin: this.isAdmin },
     process.env.ACCESS_TOKEN_SECRET,
@@ -46,7 +38,7 @@ userSchema.methods.generateAccessToken = function () {
   );
 };
 
-userSchema.methods.generateRefreshToken = function () {
+adminSchema.methods.generateRefreshToken = function () {
   return jwt.sign(
     { id: this._id, isAdmin: this.isAdmin },
     process.env.REFRESH_TOKEN_SECRET,
@@ -54,4 +46,4 @@ userSchema.methods.generateRefreshToken = function () {
   );
 };
 
-export default mongoose.model("user", userSchema);
+export default mongoose.model("admin", adminSchema);

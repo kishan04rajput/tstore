@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 
-const userSchema = new mongoose.Schema({
+const staffSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
@@ -24,9 +24,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  cart: {
-    type: [String],
-  },
   refreshToken: {
     type: String,
   },
@@ -38,7 +35,7 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-userSchema.methods.generateAccessToken = function () {
+staffSchema.methods.generateAccessToken = function () {
   return jwt.sign(
     { id: this._id, isAdmin: this.isAdmin },
     process.env.ACCESS_TOKEN_SECRET,
@@ -46,7 +43,7 @@ userSchema.methods.generateAccessToken = function () {
   );
 };
 
-userSchema.methods.generateRefreshToken = function () {
+staffSchema.methods.generateRefreshToken = function () {
   return jwt.sign(
     { id: this._id, isAdmin: this.isAdmin },
     process.env.REFRESH_TOKEN_SECRET,
@@ -54,4 +51,4 @@ userSchema.methods.generateRefreshToken = function () {
   );
 };
 
-export default mongoose.model("user", userSchema);
+export default mongoose.model("staff", staffSchema);

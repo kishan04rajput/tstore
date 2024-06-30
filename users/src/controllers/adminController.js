@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import crypto from "crypto";
-import userModel from "../models/userModel.js";
+import adminModel from "../models/adminModel.js";
+import staffModel from "../models/staffModel.js";
 import nodemailer from "nodemailer";
 
 export const signup = async (req, res) => {
@@ -9,21 +10,20 @@ export const signup = async (req, res) => {
   const salt = bcrypt.genSaltSync(saltRounds);
   const hash = bcrypt.hashSync(myPlaintextPassword, salt);
   try {
-    const isPresent = await userModel.find({ email: req.params.email });
-    if (isPresent.length > 0) {
+    const isPresent = await adminModel.findOne({ email: req.body.email });
+    if (isPresent) {
       console.log("isPresent");
-      res.status(505).send("User present!");
+      res.status(409).send("Admin already present!");
       return;
     }
-    const newUser = new userModel({
+    const newAdmin = new adminModel({
       email: req.body.email,
-      mobile: req.body.mobile,
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       password: hash,
     });
-    await newUser.save();
-    res.status(200).send("User created successfully!");
+    await newAdmin.save();
+    res.status(201).send("Admin created successfully!");
   } catch (err) {
     console.log(err);
     res.status(400).send(err);
@@ -33,25 +33,25 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   const myPlaintextPassword = req.body.password;
   try {
-    const user = await userModel.findOne({ email: req.body.email });
-    if (!user) {
-      return res.status(404).send("No user found!");
+    const admin = await adminModel.findOne({ email: req.body.email });
+    if (!admin) {
+      return res.status(404).send("No admin found!");
     }
     const isPasswordCorrect = bcrypt.compareSync(
       myPlaintextPassword,
-      user.password
+      admin.password
     );
     if (!isPasswordCorrect) {
       return res.status(401).send("Wrong password!");
     }
 
-    const accessToken = await user.generateAccessToken();
-    const refreshToken = await user.generateRefreshToken();
+    const accessToken = admin.generateAccessToken();
+    const refreshToken = admin.generateRefreshToken();
 
-    user.refreshToken = refreshToken;
-    await user.save({ validateBeforeSave: false });
+    admin.refreshToken = refreshToken;
+    await admin.save({ validateBeforeSave: false });
 
-    const { password, refreshToken: _, _id, __v, ...otherDetails } = user._doc;
+    const { password, refreshToken: _, _id, __v, ...otherDetails } = admin._doc;
     res
       .cookie("tstore_token", accessToken)
       .status(200)
@@ -67,28 +67,28 @@ export const logout = async (req, res) => {
   res.status(200).send("Logged out");
 };
 
-export const deleteUser = async (req, res) => {
+export const deleteAdmin = async (req, res) => {
   try {
-    await userModel.findByIdAndDelete(req.params.id);
-    res.status(200).json("User deleted successfully!");
+    await adminModel.findByIdAndDelete(req.params.id);
+    res.status(200).json("Admin deleted successfully!");
   } catch (err) {
     res.status(500).json(err);
   }
 };
 
-export const getAllUser = async (req, res) => {
+export const getAllAdmins = async (req, res) => {
   try {
-    const users = await userModel.find();
-    res.status(200).json(users);
+    const admins = await adminModel.find();
+    res.status(200).json(admins);
   } catch (err) {
     res.status(500).json(err);
   }
 };
 
-export const getUser = async (req, res) => {
+export const getAdmin = async (req, res) => {
   try {
-    const users = await userModel.find({ email: req.params.email });
-    res.status(200).json(users);
+    const admin = await adminModel.findOne({ email: req.params.email });
+    res.status(200).json(admin);
   } catch (err) {
     res.status(500).json(err);
   }
@@ -97,19 +97,22 @@ export const getUser = async (req, res) => {
 export const changePassword = async (req, res) => {
   const { email, oldPassword, newPassword } = req.body;
   try {
-    const user = await userModel.findOne({ email });
-    if (!user) {
-      return res.status(404).send("User not found!");
+    const admin = await adminModel.findOne({ email });
+    if (!admin) {
+      return res.status(404).send("Admin not found!");
     }
-    const isOldPasswordCorrect = bcrypt.compareSync(oldPassword, user.password);
+    const isOldPasswordCorrect = bcrypt.compareSync(
+      oldPassword,
+      admin.password
+    );
     if (!isOldPasswordCorrect) {
       return res.status(400).send("Old password is incorrect!");
     }
     const saltRounds = 10;
     const salt = bcrypt.genSaltSync(saltRounds);
     const hash = bcrypt.hashSync(newPassword, salt);
-    user.password = hash;
-    await user.save();
+    admin.password = hash;
+    await admin.save();
     res.status(200).send("Password changed successfully!");
   } catch (err) {
     console.log("Error changing password", err);
@@ -120,17 +123,17 @@ export const changePassword = async (req, res) => {
 export const forgotPassword = async (req, res) => {
   const { email } = req.body;
   try {
-    const user = await userModel.findOne({ email });
-    if (!user) {
-      return res.status(404).send("User not found!");
+    const admin = await adminModel.findOne({ email });
+    if (!admin) {
+      return res.status(404).send("Admin not found!");
     }
 
     const resetToken = crypto.randomBytes(32).toString("hex");
     const hash = bcrypt.hashSync(resetToken, 10);
 
-    user.resetPasswordToken = hash;
-    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
-    await user.save();
+    admin.resetPasswordToken = hash;
+    admin.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+    await admin.save();
 
     const resetURL = `http://${req.headers.host}/resetPassword/${resetToken}`;
 
@@ -143,7 +146,7 @@ export const forgotPassword = async (req, res) => {
     });
 
     const mailOptions = {
-      to: user.email,
+      to: admin.email,
       from: "passwordreset@example.com",
       subject: "Password Reset",
       text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
@@ -170,18 +173,18 @@ export const resetPassword = async (req, res) => {
   const { newPassword } = req.body;
   const token = req.params.token;
   try {
-    const user = await userModel.findOne({
+    const admin = await adminModel.findOne({
       resetPasswordToken: { $exists: true },
       resetPasswordExpires: { $gt: Date.now() },
     });
 
-    if (!user) {
+    if (!admin) {
       return res
         .status(400)
         .send("Password reset token is invalid or has expired.");
     }
 
-    const isTokenValid = bcrypt.compareSync(token, user.resetPasswordToken);
+    const isTokenValid = bcrypt.compareSync(token, admin.resetPasswordToken);
     if (!isTokenValid) {
       return res
         .status(400)
@@ -192,15 +195,51 @@ export const resetPassword = async (req, res) => {
     const salt = bcrypt.genSaltSync(saltRounds);
     const hash = bcrypt.hashSync(newPassword, salt);
 
-    user.password = hash;
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpires = undefined;
+    admin.password = hash;
+    admin.resetPasswordToken = undefined;
+    admin.resetPasswordExpires = undefined;
 
-    await user.save();
+    await admin.save();
 
     res.status(200).send("Password has been reset successfully!");
   } catch (err) {
     console.log("Error in resetPassword", err);
     res.status(500).send(err);
+  }
+};
+
+export const createStaff = async (req, res) => {
+  const saltRounds = 10;
+  const myPlaintextPassword = req.body.password;
+  const salt = bcrypt.genSaltSync(saltRounds);
+  const hash = bcrypt.hashSync(myPlaintextPassword, salt);
+  try {
+    const isPresent = await staffModel.findOne({ email: req.body.email });
+    if (isPresent) {
+      console.log("isPresent");
+      res.status(409).send("Staff already present!");
+      return;
+    }
+    const newStaff = new staffModel({
+      email: req.body.email,
+      mobile: req.body.mobile,
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      password: hash,
+    });
+    await newStaff.save();
+    res.status(201).send("Staff created successfully!");
+  } catch (err) {
+    console.log(err);
+    res.status(400).send(err);
+  }
+};
+
+export const deleteStaff = async (req, res) => {
+  try {
+    await staffModel.findByIdAndDelete(req.params.id);
+    res.status(200).json("Staff deleted successfully!");
+  } catch (err) {
+    res.status(500).json(err);
   }
 };
