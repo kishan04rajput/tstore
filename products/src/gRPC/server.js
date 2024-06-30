@@ -43,7 +43,7 @@ function grpcSever() {
             if (error) {
                 console.error("Server failed to bind:", error);
             } else {
-                console.log(`user gRPC server running on ${port}`);
+                console.log(`Product gRPC server running on ${port}`);
             }
         }
     );

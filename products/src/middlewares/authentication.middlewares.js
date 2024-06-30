@@ -5,7 +5,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 const verifyJWT = asyncHandler(async (req, res, next) => {
     try {
         const accessToken =
-          req.cookies?.accessToken ||
+          req.cookies?.tStoreAccessToken ||
           req.header("Authorization")?.replace("Bearer ", "") ||
           "";
         if (!accessToken) {
