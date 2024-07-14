@@ -32,7 +32,8 @@ const adminSchema = new mongoose.Schema({
 
 adminSchema.methods.generateAccessToken = function () {
   return jwt.sign(
-    { id: this._id, isAdmin: this.isAdmin },
+    { id: this._id, firstName: this.firstName, lastname: this.lastName,
+      email: this.email, role: 0 },
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
   );
@@ -40,7 +41,7 @@ adminSchema.methods.generateAccessToken = function () {
 
 adminSchema.methods.generateRefreshToken = function () {
   return jwt.sign(
-    { id: this._id, isAdmin: this.isAdmin },
+    { id: this._id },
     process.env.REFRESH_TOKEN_SECRET,
     { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
   );

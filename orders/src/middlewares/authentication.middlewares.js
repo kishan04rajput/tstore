@@ -1,6 +1,6 @@
-import { authenticateUserByAccessToken } from "../../../orders/src/gRPC/client.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { authenticateUserByAccessToken } from "../gRPC/client.js";
 
 const verifyJWT = asyncHandler(async (req, res, next) => {
     try {
@@ -8,17 +8,14 @@ const verifyJWT = asyncHandler(async (req, res, next) => {
           req.cookies?.tStoreAccessToken ||
           req.header("Authorization")?.replace("Bearer ", "") ||
           "";
-
         if (!accessToken) {
           throw new ApiError(401, "UnAuthorized Access");
         }
          
         const userObj = await authenticateUserByAccessToken(accessToken).catch((err)=>{
-            console.log("--->", err)
+            console.log("---> middleware error", err)
             throw new ApiError(401, "Unable to authenticate user");
         });
-
-        console.log("--->", userObj)
     
         if(!userObj) {
           throw new ApiError(401, "invalid access token");
@@ -33,7 +30,7 @@ const verifyJWT = asyncHandler(async (req, res, next) => {
 })
 
 const isAdmin = (req, res, next) => {
-    if (!req.user || req.role !== 0) {
+    if (!req.user || req.role!==0) {
         throw next(new ApiError(403, "Forbidden: Admins only"));
     }
     next();

@@ -33,7 +33,7 @@ const createCategory = asyncHandler(async (req, res) => {
   const { name, description, tags } = req.body;
 
   const createdCategory = await Category.create({
-    createdBy: new mongoose.Types.ObjectId(userObj.id),
+    createdBy: new mongoose.Types.ObjectId(req.user.id),
     name: name,
     description: description || "",
     tags: tags || "",

@@ -9,7 +9,7 @@ const deleteOrder = asyncHandler(async (req, res) => {
     if(!order) {
       throw new ApiError(404, "Order Not Found");
     }
-    if(order.userId.toString() !== req.user.id && !req.user.isAdmin){
+    if(order.userId.toString() !== req.user.id && req.user.role!==0){
       throw new ApiError(401, "You can't delete this order");
     }
     await Order.findByIdAndDelete(orderId);

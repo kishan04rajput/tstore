@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { verifyJWT, isAdmin } from "../../../products/src/middlewares/authentication.middlewares.js";
 import { createOrder } from "../controllers/createOrder.controllers.js";
 import { getAllOrders, getOrder } from "../controllers/getOrder.controllers.js";
 import { deleteOrder } from "../controllers/deleteOrder.controllers.js";
 import { deleteOrderItem } from "../controllers/deleteOrderItem.controllers.js";
+import { verifyJWT } from "../middlewares/authentication.middlewares.js";
 
 
 

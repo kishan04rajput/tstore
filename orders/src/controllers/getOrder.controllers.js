@@ -18,7 +18,7 @@ const getAllOrders = asyncHandler(async (req, res) => {
         toDate = new Date(toDate);
         query.createdAt = { $gte: fromDate, $lte: toDate };
     }
-    if(!req.user.isAdmin) {
+    if(req.role !== 0) {
         query.userId = req.user.id
     }
 
@@ -38,7 +38,7 @@ const getOrder = asyncHandler(async (req, res) => {
   if(!order){
     throw new ApiError(404, 'Order Not Found');
   }
-  if(order.userId.toString() !== req.user.id && !req.user.isAdmin){
+  if(order.userId.toString() !== req.user.id && req.role !== 0){
     throw new ApiError(401, "You can't access this order");
   }
   const orderedItems = await OrderItem.find({orderId: order._id});

@@ -15,7 +15,7 @@ import { verifyAdmin } from "../middlewares/verifyAdmin.js";
 
 const router = express.Router();
 
-// router.post("/signUp", signup);
+router.post("/signUp", signup);
 router.post("/login", login);
 // router.delete("/:id", deleteStaff);
 router.get("/", getAllStaff);

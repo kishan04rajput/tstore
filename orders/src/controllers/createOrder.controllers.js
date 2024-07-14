@@ -10,13 +10,14 @@ const createOrder = asyncHandler(async (req, res) => {
     let {paymentMode, shippingAddress, billingAddress, productsQtys} = req.body;
     shippingAddress = new mongoose.Types.ObjectId(shippingAddress);
     billingAddress = new mongoose.Types.ObjectId(billingAddress);
-
+    console.log("---> Here I am")
     const createdOrder = await Order.create({
       paymentMode,
       shippingAddress,
       billingAddress,
       userId: new mongoose.Types.ObjectId(req.user.id)
-    })
+    });
+    console.log(">>> here i am")
     if(!createdOrder) {
       throw new ApiError(500, "Unable to create order");
     }
