@@ -13,7 +13,6 @@ const verifyJWT = asyncHandler(async (req, res, next) => {
         }
          
         const userObj = await authenticateUserByAccessToken(accessToken).catch((err)=>{
-            console.log("---> middleware error", err)
             throw new ApiError(401, "Unable to authenticate user");
         });
     

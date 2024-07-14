@@ -10,7 +10,6 @@ import { Product } from "../models/product.models.js";
 
 async function getProductById(call, callback) {
     const productId = call.request.id;
-    console.log('product_id', productId);
     if(!productId) {
         callback({
             message: "Product Id not provided",

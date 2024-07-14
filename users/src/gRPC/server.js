@@ -81,7 +81,6 @@ async function authenticateUserByAccessToken(call, callback) {
         user = admin;
       }
 
-      console.log(">>>", user, admin, staff, role);
       if (user) {
         const userObj = {
           id: user.id,
@@ -105,7 +104,6 @@ async function authenticateUserByAccessToken(call, callback) {
       });
     }
   } catch (err) {
-    console.log("-->>>>", err);
     callback({
       message: "Invalid Access Token!",
       code: status.INVALID_ARGUMENT,

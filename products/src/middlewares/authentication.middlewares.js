@@ -14,11 +14,8 @@ const verifyJWT = asyncHandler(async (req, res, next) => {
         }
          
         const userObj = await authenticateUserByAccessToken(accessToken).catch((err)=>{
-            console.log("--->", err)
             throw new ApiError(401, "Unable to authenticate user");
         });
-
-        console.log("--->", userObj)
     
         if(!userObj) {
           throw new ApiError(401, "invalid access token");
